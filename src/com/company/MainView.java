@@ -3,46 +3,49 @@ package com.company;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
 public class MainView {
+    private static final String[] LABELS = {"Producent", "Przekątna", "Rozdzielczość", "Matryca", "?", "Procesor",
+            "L. rdzeni", "Taktowanie", "RAM", "Pojemność", "Dysk", "Karta graficzna", "VRAM", "System", "Napęd"};
     private JButton importButton;
     private JButton exportButton;
     private JTable dataJTable;
     private JPanel mainJPanel;
 
 
-    public MainView() throws IOException {
+    private MainView() {
 
 
-        File readFile = new File("src/katalog.txt");
-
-        BufferedReader br = new BufferedReader(new FileReader(readFile));
-
-        String line;
-
-        String[] LABELS = {"Producent", "Przekątna", "Rozdzielczość", "Matryca", "?", "Procesor",
-                "L. rdzeni", "Taktowanie", "RAM", "Pojemność", "Dysk", "Karta graficzna", "VRAM", "System", "Napęd"};
-
-        String[] FORMATSTYLES = {"| %-10s", "| %-10s", "| %-13s", "| %-11s", "| %-4s", "| %-9s", "| %-10s", "| %-10s",
-                "| %-5s", "| %-10s", "| %-5s", "| %-25s", "| %-5s", "| %-25s", "| %-8s |"};
-
-        DefaultTableModel tableModel = new DefaultTableModel(LABELS, 0);
+        importButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    File readFile = new File("src/katalog.txt");
+                    BufferedReader br = new BufferedReader(new FileReader(readFile));
 
 
-        while ((line = br.readLine()) != null) {
-            Vector<String> lineCells = splitToCells(line);
+                    DefaultTableModel tableModel = new DefaultTableModel(LABELS, 0);
 
-            tableModel.addRow(lineCells);
-        }
-        dataJTable.setModel(tableModel);
+                    String line;
+
+                    while ((line = br.readLine()) != null) {
+                        Vector<String> lineCells = splitToCells(line);
+                        tableModel.addRow(lineCells);
+                    }
+                    dataJTable.setModel(tableModel);
+                    br.close();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
     }
 
 
