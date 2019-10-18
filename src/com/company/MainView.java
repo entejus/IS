@@ -43,6 +43,7 @@ public class MainView {
 
     private void saveToFile(File writeFile) throws IOException {
         BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(writeFile));
+
         DefaultTableModel tableModel = (DefaultTableModel) dataJTable.getModel();
         int rowsNumber = tableModel.getRowCount();
         int columnsNumber = tableModel.getColumnCount();
@@ -50,7 +51,7 @@ public class MainView {
         for (int row = 0; row < rowsNumber; row++) {
             StringBuilder lineBuilder = new StringBuilder();
             for (int column = 0; column < columnsNumber; column++) {
-                lineBuilder.append(tableModel.getValueAt(row,column)+";");
+                lineBuilder.append(tableModel.getValueAt(row, column)).append(";");
             }
             bufferedWriter.write(lineBuilder.toString());
             bufferedWriter.newLine();
