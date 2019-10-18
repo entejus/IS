@@ -1,6 +1,8 @@
 package com.company;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -17,6 +19,8 @@ public class MainView {
 
 
     public MainView() throws IOException {
+
+
         File readFile = new File("src/katalog.txt");
 
         BufferedReader br = new BufferedReader(new FileReader(readFile));
@@ -24,17 +28,14 @@ public class MainView {
         String line;
 
         String[] LABELS = {"Producent", "Przekątna", "Rozdzielczość", "Matryca", "?", "Procesor",
-                "L. rdzeni", "Cena", "RAM", "Pojemność", "Dysk", "Karta graficzna", "VRAM", "System", "Napęd"};
+                "L. rdzeni", "Taktowanie", "RAM", "Pojemność", "Dysk", "Karta graficzna", "VRAM", "System", "Napęd"};
 
-        String[] FORMATSTYLES = {"| %-10s", "| %-10s", "| %-13s", "| %-11s", "| %-4s", "| %-9s", "| %-10s", "| %-5s",
+        String[] FORMATSTYLES = {"| %-10s", "| %-10s", "| %-13s", "| %-11s", "| %-4s", "| %-9s", "| %-10s", "| %-10s",
                 "| %-5s", "| %-10s", "| %-5s", "| %-25s", "| %-5s", "| %-25s", "| %-8s |"};
 
-        for (int i = 0; i < LABELS.length; i++) {
-            System.out.printf(FORMATSTYLES[i], LABELS[i]);
-        }
-        System.out.println();
-        System.out.println("-------------------------------------------------------------------------------------------" +
-                "-----------------------------------------------------------------------------------------------");
+        TableModel tableLabels=new DefaultTableModel(LABELS,0);
+        dataJTable.setModel(tableLabels);
+
         while ((line = br.readLine()) != null) {
             List<String> lineCells = splitToCells(line);
 
@@ -43,8 +44,6 @@ public class MainView {
             }
             System.out.println();
         }
-        System.out.println("-------------------------------------------------------------------------------------------" +
-                "-----------------------------------------------------------------------------------------------");
     }
 
 
