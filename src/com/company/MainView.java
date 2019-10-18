@@ -14,6 +14,8 @@ import java.util.Vector;
 public class MainView {
     private static final String[] LABELS = {"Producent", "Przekątna", "Rozdzielczość", "Matryca", "?", "Procesor",
             "L. rdzeni", "Taktowanie", "RAM", "Pojemność", "Dysk", "Karta graficzna", "VRAM", "System", "Napęd"};
+    private static final String FILE_PATH = "src/katalog.txt";
+
     private JButton importButton;
     private JButton exportButton;
     private JTable dataJTable;
@@ -21,36 +23,58 @@ public class MainView {
 
 
     private MainView() {
-        importButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    File readFile = new File("src/katalog.txt");
-                    readFromFile(readFile);
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
+        importButton.addActionListener(e -> {
+            try {
+                File readFile = new File(FILE_PATH);
+                readFromFile(readFile);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
+        exportButton.addActionListener(e -> {
+            try {
+                File writeFile = new File(FILE_PATH);
+                saveToFile(writeFile);
+            } catch (IOException ex) {
+                ex.printStackTrace();
             }
         });
     }
 
+    private void saveToFile(File writeFile) throws IOException {
+        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(writeFile));
+        DefaultTableModel tableModel = (DefaultTableModel) dataJTable.getModel();
+        int rowsNumber = tableModel.getRowCount();
+        int columnsNumber = tableModel.getColumnCount();
+
+        for (int row = 0; row < rowsNumber; row++) {
+            StringBuilder lineBuilder = new StringBuilder();
+            for (int column = 0; column < columnsNumber; column++) {
+                lineBuilder.append(tableModel.getValueAt(row,column)+";");
+            }
+            bufferedWriter.write(lineBuilder.toString());
+            bufferedWriter.newLine();
+        }
+        bufferedWriter.close();
+    }
 
     private void readFromFile(File readFile) throws IOException {
-        BufferedReader br = new BufferedReader(new FileReader(readFile));
+        BufferedReader bufferedReader = new BufferedReader(new FileReader(readFile));
 
         DefaultTableModel tableModel = new DefaultTableModel(LABELS, 0);
         String line;
 
-        while ((line = br.readLine()) != null) {
+        while ((line = bufferedReader.readLine()) != null) {
             Vector<String> lineCells = splitToCells(line);
             tableModel.addRow(lineCells);
         }
 
         dataJTable.setModel(tableModel);
-        br.close();
+        bufferedReader.close();
     }
 
-    private static Vector<String> splitToCells(String line) {
+
+    private Vector<String> splitToCells(String line) {
         Vector<String> cells = new Vector<>();
 
         StringTokenizer st = new StringTokenizer(line, ";", true);
