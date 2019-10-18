@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.Vector;
 
 public class MainView {
     private JButton importButton;
@@ -33,22 +34,20 @@ public class MainView {
         String[] FORMATSTYLES = {"| %-10s", "| %-10s", "| %-13s", "| %-11s", "| %-4s", "| %-9s", "| %-10s", "| %-10s",
                 "| %-5s", "| %-10s", "| %-5s", "| %-25s", "| %-5s", "| %-25s", "| %-8s |"};
 
-        TableModel tableLabels=new DefaultTableModel(LABELS,0);
-        dataJTable.setModel(tableLabels);
+        DefaultTableModel tableModel = new DefaultTableModel(LABELS, 0);
+
 
         while ((line = br.readLine()) != null) {
-            List<String> lineCells = splitToCells(line);
+            Vector<String> lineCells = splitToCells(line);
 
-            for (int i = 0; i < lineCells.size(); i++) {
-                System.out.printf(FORMATSTYLES[i], lineCells.get(i));
-            }
-            System.out.println();
+            tableModel.addRow(lineCells);
         }
+        dataJTable.setModel(tableModel);
     }
 
 
-    private static List<String> splitToCells(String line) {
-        List<String> cells = new ArrayList<>();
+    private static Vector<String> splitToCells(String line) {
+        Vector<String> cells = new Vector<>();
 
         StringTokenizer st = new StringTokenizer(line, ";", true);
 
