@@ -21,26 +21,12 @@ public class MainView {
 
 
     private MainView() {
-
-
         importButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
                     File readFile = new File("src/katalog.txt");
-                    BufferedReader br = new BufferedReader(new FileReader(readFile));
-
-
-                    DefaultTableModel tableModel = new DefaultTableModel(LABELS, 0);
-
-                    String line;
-
-                    while ((line = br.readLine()) != null) {
-                        Vector<String> lineCells = splitToCells(line);
-                        tableModel.addRow(lineCells);
-                    }
-                    dataJTable.setModel(tableModel);
-                    br.close();
+                    readFromFile(readFile);
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
@@ -48,6 +34,21 @@ public class MainView {
         });
     }
 
+
+    private void readFromFile(File readFile) throws IOException {
+        BufferedReader br = new BufferedReader(new FileReader(readFile));
+
+        DefaultTableModel tableModel = new DefaultTableModel(LABELS, 0);
+        String line;
+
+        while ((line = br.readLine()) != null) {
+            Vector<String> lineCells = splitToCells(line);
+            tableModel.addRow(lineCells);
+        }
+
+        dataJTable.setModel(tableModel);
+        br.close();
+    }
 
     private static Vector<String> splitToCells(String line) {
         Vector<String> cells = new Vector<>();
