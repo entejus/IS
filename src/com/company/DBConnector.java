@@ -2,10 +2,11 @@ package com.company;
 
 import java.io.ByteArrayInputStream;
 import java.sql.*;
+import java.util.Objects;
 import java.util.Vector;
 
 public class DBConnector {
-    private static final int COL_NUMBER = 15;
+    public static final int COL_NUMBER = 15;
 
     private Connection connect = null;
     private Statement statement = null;
@@ -23,19 +24,24 @@ public class DBConnector {
         }
     }
 
-    Vector<ResultSet> getData() {
-        Vector<ResultSet> records= new Vector<>();
+    Vector<Vector<String>> getData() {
+        Vector<Vector<String>> records = new Vector<>();
         try {
             statement = connect.createStatement();
             resultSet = statement
                     .executeQuery("select * from is.katalog order by id");
             while (resultSet.next()) {
-                records.add(resultSet);
+                Vector<String> record = new Vector<>();
+                for (int i = 2; i <= COL_NUMBER+1; i++) {
+
+                    String cell = resultSet.getString(i);
+                    record.add(Objects.requireNonNullElse(cell, "---"));
+                }
+                records.add(record);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return records;
     }
 

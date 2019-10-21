@@ -2,14 +2,8 @@ package com.company;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringTokenizer;
-import java.util.Vector;
+import java.util.*;
 
 public class MainView {
     private static final String[] LABELS = {"Producent", "Przekątna", "Rozdzielczość", "Matryca", "Używany", "Procesor",
@@ -41,7 +35,7 @@ public class MainView {
             }
         });
         databaseImportButton.addActionListener(e -> {
-
+            readFromDatabase();
         });
     }
 
@@ -76,6 +70,19 @@ public class MainView {
 
         dataJTable.setModel(tableModel);
         bufferedReader.close();
+    }
+
+    private void readFromDatabase() {
+        DefaultTableModel tableModel = new DefaultTableModel(LABELS, 0);
+
+        DBConnector dbConnector = new DBConnector();
+        Vector<Vector<String>> records = dbConnector.getData();
+
+        for (Vector<String> record : records) {
+            tableModel.addRow(record);
+        }
+
+        dataJTable.setModel(tableModel);
     }
 
 
