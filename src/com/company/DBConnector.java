@@ -23,20 +23,21 @@ public class DBConnector {
         }
     }
 
-//    ByteArrayInputStream getData() {
-//        ByteArrayInputStream data = null;
-//        try {
-//            statement = connect.createStatement();
-//            resultSet = statement
-//                    .executeQuery("select data from is.katalog order by id");
-//            resultSet.next();
-//            data = (ByteArrayInputStream) resultSet.getBinaryStream("data");
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//
-//        return data;
-//    }
+    Vector<ResultSet> getData() {
+        Vector<ResultSet> records= new Vector<>();
+        try {
+            statement = connect.createStatement();
+            resultSet = statement
+                    .executeQuery("select * from is.katalog order by id");
+            while (resultSet.next()) {
+                records.add(resultSet);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return records;
+    }
 
     void setDataRow(Vector<String> data) {
         try {
@@ -44,7 +45,11 @@ public class DBConnector {
                     "(default ,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
             for (int i = 1; i <= COL_NUMBER; i++) {
-                preparedStatement.setString(i, data.get(i));
+                if (data.get(i - 1).equals("---")) {
+                    preparedStatement.setString(i, null);
+                } else {
+                    preparedStatement.setString(i, data.get(i - 1));
+                }
             }
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
