@@ -16,14 +16,15 @@ public class MainView {
             "L. rdzeni", "Taktowanie", "RAM", "Pojemność", "Dysk", "Karta graficzna", "VRAM", "System", "Napęd"};
     private static final String FILE_PATH = "src/katalog.txt";
 
-    private JButton importButton;
-    private JButton exportButton;
+    private JButton fileImportButton;
+    private JButton fileExportButton;
+    private JButton databaseImportButton;
     private JTable dataJTable;
     private JPanel mainJPanel;
 
 
     private MainView() {
-        importButton.addActionListener(e -> {
+        fileImportButton.addActionListener(e -> {
             try {
                 File readFile = new File(FILE_PATH);
                 readFromFile(readFile);
@@ -31,13 +32,16 @@ public class MainView {
                 ex.printStackTrace();
             }
         });
-        exportButton.addActionListener(e -> {
+        fileExportButton.addActionListener(e -> {
             try {
                 File writeFile = new File(FILE_PATH);
                 saveToFile(writeFile);
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
+        });
+        databaseImportButton.addActionListener(e -> {
+
         });
     }
 
