@@ -51,7 +51,12 @@ public class MainView {
         for (int row = 0; row < rowsNumber; row++) {
             StringBuilder lineBuilder = new StringBuilder();
             for (int column = 0; column < columnsNumber; column++) {
-                lineBuilder.append(tableModel.getValueAt(row, column)).append(";");
+                String cell = tableModel.getValueAt(row, column).toString();
+                if (cell.equals("---")) {
+                    lineBuilder.append(";");
+                } else {
+                    lineBuilder.append(cell).append(";");
+                }
             }
             bufferedWriter.write(lineBuilder.toString());
             bufferedWriter.newLine();
