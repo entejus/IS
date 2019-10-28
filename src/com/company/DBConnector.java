@@ -17,8 +17,7 @@ public class DBConnector {
         try {
             Class.forName("com.mysql.jdbc.Driver");
             connect = DriverManager
-                    .getConnection("jdbc:mysql://localhost/is?"
-                            + "user=root&password=password");
+                    .getConnection("jdbc:sqlite:src/katalog.db");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -29,7 +28,7 @@ public class DBConnector {
         try {
             statement = connect.createStatement();
             resultSet = statement
-                    .executeQuery("select * from is.katalog order by id");
+                    .executeQuery("select * from katalog order by id");
             while (resultSet.next()) {
                 Vector<String> record = new Vector<>();
                 for (int i = 2; i <= COL_NUMBER+1; i++) {
