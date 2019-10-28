@@ -58,7 +58,6 @@ public class MainView {
         bufferedWriter.close();
     }
 
-
     private void readFromFile(File readFile) throws IOException {
         BufferedReader bufferedReader = new BufferedReader(new FileReader(readFile));
 
@@ -74,6 +73,22 @@ public class MainView {
         bufferedReader.close();
     }
 
+    private void saveToDatabase() {
+        DefaultTableModel tableModel = (DefaultTableModel) dataJTable.getModel();
+
+        DBConnector dbConnector = new DBConnector();
+
+        int rowsNumber = tableModel.getRowCount();
+        int columnsNumber = tableModel.getColumnCount();
+
+        for (int row = 0; row < rowsNumber; row++) {
+            for (int column = 0; column < columnsNumber; column++) {
+            }
+
+        }
+        dbConnector.close();
+    }
+
     private void readFromDatabase() {
         DefaultTableModel tableModel = new DefaultTableModel(LABELS, 0);
 
@@ -85,6 +100,7 @@ public class MainView {
         }
 
         dataJTable.setModel(tableModel);
+        dbConnector.close();
     }
 
 
