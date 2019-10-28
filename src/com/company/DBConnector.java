@@ -48,8 +48,9 @@ public class DBConnector {
             resultSet = statement.executeQuery("select MIN(id),MAX(id) from katalog");
             int minID = resultSet.getInt(1);
             int maxID = resultSet.getInt(2);
+            int id = minID;
 
-            for (int i = minID; i <= maxID; i++) {
+            for (int i = 0; i < data.size(); i++) {
                 preparedStatement = connect.prepareStatement("UPDATE katalog  SET " +
                         "producent=?,przekatna=?,rozdzielczosc=?,matryca=?,uzywany=?,procesor=?," +
                         "l_rdzeni=?,taktowanie=?,ram=?,pojemnosc=?,dysk=?,karta_graficzna=?,vram=?," +
@@ -62,7 +63,9 @@ public class DBConnector {
                         preparedStatement.setString(j, data.get(i).get(j-1));
                     }
                 }
+                preparedStatement.setInt(COL_NUMBER+1,id);
                 preparedStatement.executeUpdate();
+                id++;
             }
 
         } catch (SQLException e) {

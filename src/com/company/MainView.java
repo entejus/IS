@@ -2,11 +2,13 @@ package com.company;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.*;
 
 public class MainView {
-    private static final String[] LABELS = {"ID","Producent", "Przekątna", "Rozdzielczość", "Matryca", "Używany", "Procesor",
+    private static final String[] LABELS = { "Producent", "Przekątna", "Rozdzielczość", "Matryca", "Używany", "Procesor",
             "L. rdzeni", "Taktowanie", "RAM", "Pojemność", "Dysk", "Karta graficzna", "VRAM", "System", "Napęd"};
     private static final String FILE_PATH = "src/katalog.txt";
 
@@ -37,6 +39,9 @@ public class MainView {
         });
         databaseImportButton.addActionListener(e -> {
             readFromDatabase();
+        });
+        databaseExportButton.addActionListener(e -> {
+            saveToDatabase();
         });
     }
 
@@ -80,12 +85,17 @@ public class MainView {
 
         int rowsNumber = tableModel.getRowCount();
         int columnsNumber = tableModel.getColumnCount();
+        Vector<Vector<String>> records = new Vector<>();
 
         for (int row = 0; row < rowsNumber; row++) {
+            Vector<String> record = new Vector<>();
             for (int column = 0; column < columnsNumber; column++) {
+                String cell = tableModel.getValueAt(row, column).toString();
+                record.add(Objects.requireNonNullElse(cell, ""));
             }
-
+            records.add(record);
         }
+        dbConnector.setDataRow(records);
         dbConnector.close();
     }
 
