@@ -15,6 +15,7 @@ public class MainView {
     private JButton databaseImportButton;
     private JTable dataJTable;
     private JPanel mainJPanel;
+    private JButton databaseExportButton;
 
 
     private MainView() {
@@ -56,6 +57,7 @@ public class MainView {
         }
         bufferedWriter.close();
     }
+
 
     private void readFromFile(File readFile) throws IOException {
         BufferedReader bufferedReader = new BufferedReader(new FileReader(readFile));
