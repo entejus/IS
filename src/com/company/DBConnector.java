@@ -35,7 +35,7 @@ public class DBConnector {
                 for (int i = 2; i <= COL_NUMBER+1; i++) {
 
                     String cell = resultSet.getString(i);
-                    record.add(Objects.requireNonNullElse(cell, "---"));
+                    record.add(Objects.requireNonNullElse(cell, ""));
                 }
                 records.add(record);
             }

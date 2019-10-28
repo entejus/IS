@@ -96,7 +96,7 @@ public class MainView {
         while (st.hasMoreTokens()) {
             String token = st.nextToken();
             if (token.equals(lastToken) || (token.equals(";") && lastToken.equals(""))) {
-                cells.add("---");
+                cells.add("");
             } else if (!token.equals(";")) {
                 cells.add(token);
             }
