@@ -6,7 +6,7 @@ import java.io.*;
 import java.util.*;
 
 public class MainView {
-    private static final String[] LABELS = {"Producent", "Przekątna", "Rozdzielczość", "Matryca", "Używany", "Procesor",
+    private static final String[] LABELS = {"ID","Producent", "Przekątna", "Rozdzielczość", "Matryca", "Używany", "Procesor",
             "L. rdzeni", "Taktowanie", "RAM", "Pojemność", "Dysk", "Karta graficzna", "VRAM", "System", "Napęd"};
     private static final String FILE_PATH = "src/katalog.txt";
 

@@ -29,7 +29,7 @@ public class DBConnector {
                     .executeQuery("select * from katalog order by id");
             while (resultSet.next()) {
                 Vector<String> record = new Vector<>();
-                for (int i = 2; i <= COL_NUMBER+1; i++) {
+                for (int i = 2; i <= COL_NUMBER + 1; i++) {
 
                     String cell = resultSet.getString(i);
                     record.add(Objects.requireNonNullElse(cell, ""));
@@ -42,19 +42,29 @@ public class DBConnector {
         return records;
     }
 
-    void setDataRow(Vector<String> data) {
+    void setDataRow(Vector<Vector<String>> data) {
         try {
-            preparedStatement = connect.prepareStatement("insert into is.katalog values " +
-                    "(default ,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+            statement = connect.createStatement();
+            resultSet = statement.executeQuery("select MIN(id),MAX(id) from katalog");
+            int minID = resultSet.getInt(1);
+            int maxID = resultSet.getInt(2);
 
-            for (int i = 1; i <= COL_NUMBER; i++) {
-                if (data.get(i - 1).equals("---")) {
-                    preparedStatement.setString(i, null);
-                } else {
-                    preparedStatement.setString(i, data.get(i - 1));
+            for (int i = minID; i <= maxID; i++) {
+                preparedStatement = connect.prepareStatement("UPDATE katalog  SET " +
+                        "producent=?,przekatna=?,rozdzielczosc=?,matryca=?,uzywany=?,procesor=?," +
+                        "l_rdzeni=?,taktowanie=?,ram=?,pojemnosc=?,dysk=?,karta_graficzna=?,vram=?," +
+                        "system=?,naped=? WHERE ID=?");
+
+                for (int j = 1; j <= COL_NUMBER; j++) {
+                    if (data.get(i).get(j-1).equals("")) {
+                        preparedStatement.setString(j, null);
+                    } else {
+                        preparedStatement.setString(j, data.get(i).get(j-1));
+                    }
                 }
+                preparedStatement.executeUpdate();
             }
-            preparedStatement.executeUpdate();
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
