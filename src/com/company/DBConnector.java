@@ -1,6 +1,5 @@
 package com.company;
 
-import java.io.ByteArrayInputStream;
 import java.sql.*;
 import java.util.Objects;
 import java.util.Vector;
@@ -15,9 +14,8 @@ public class DBConnector {
 
     public DBConnector() {
         try {
-            Class.forName("com.mysql.jdbc.Driver");
             connect = DriverManager
-                    .getConnection("jdbc:sqlite:src/katalog.db");
+                    .getConnection("jdbc:sqlite:katalog.db");
         } catch (Exception e) {
             e.printStackTrace();
         }
