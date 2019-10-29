@@ -1,13 +1,10 @@
 package com.company;
 
-import org.sqlite.core.DB;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.*;
 
@@ -25,13 +22,15 @@ public class MainView {
     private Vector<Vector<String>> dataInDatabase;
 
 
-
-    private MainView() {
+    private  void initDatabaseData() {
         dataJTable.setDefaultRenderer(Object.class, new CustomCellRenderer());
         DBConnector dbConnector = new DBConnector();
         dataInDatabase = dbConnector.getData();
         dbConnector.close();
+    }
 
+    private MainView() {
+        initDatabaseData();
         fileImportButton.addActionListener(e -> {
             try {
                 File readFile = new File(FILE_PATH);
@@ -108,6 +107,7 @@ public class MainView {
         }
         dbConnector.setDataRow(records);
         dbConnector.close();
+        dataInDatabase = records;
     }
 
     private void readFromDatabase() {
