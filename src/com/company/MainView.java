@@ -1,14 +1,16 @@
 package com.company;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.*;
 
 public class MainView {
-    private static final String[] LABELS = { "Producent", "Przekątna", "Rozdzielczość", "Matryca", "Używany", "Procesor",
+    private static final String[] LABELS = {"Producent", "Przekątna", "Rozdzielczość", "Matryca", "Używany", "Procesor",
             "L. rdzeni", "Taktowanie", "RAM", "Pojemność", "Dysk", "Karta graficzna", "VRAM", "System", "Napęd"};
     private static final String FILE_PATH = "src/katalog.txt";
 
@@ -18,9 +20,12 @@ public class MainView {
     private JTable dataJTable;
     private JPanel mainJPanel;
     private JButton databaseExportButton;
+    private DefaultTableCellRenderer cellRenderer;
 
 
     private MainView() {
+        dataJTable.setDefaultRenderer(Object.class, new CustomCellRenderer());
+
         fileImportButton.addActionListener(e -> {
             try {
                 File readFile = new File(FILE_PATH);
@@ -110,7 +115,22 @@ public class MainView {
         }
 
         dataJTable.setModel(tableModel);
+        dataJTable.getColumnModel().getColumn(0).setCellRenderer(cellRenderer);
+
         dbConnector.close();
+    }
+
+    public class CustomCellRenderer extends DefaultTableCellRenderer {
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            Color c = Color.WHITE;
+            if (value.toString().equals(""))
+                c = Color.RED;
+            label.setBackground(c);
+            return label;
+        }
     }
 
 
