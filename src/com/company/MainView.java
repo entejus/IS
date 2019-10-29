@@ -1,5 +1,7 @@
 package com.company;
 
+import org.sqlite.core.DB;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -20,11 +22,15 @@ public class MainView {
     private JTable dataJTable;
     private JPanel mainJPanel;
     private JButton databaseExportButton;
-    private DefaultTableCellRenderer cellRenderer;
+    private Vector<Vector<String>> dataInDatabase;
+
 
 
     private MainView() {
         dataJTable.setDefaultRenderer(Object.class, new CustomCellRenderer());
+        DBConnector dbConnector = new DBConnector();
+        dataInDatabase = dbConnector.getData();
+        dbConnector.close();
 
         fileImportButton.addActionListener(e -> {
             try {
@@ -115,7 +121,6 @@ public class MainView {
         }
 
         dataJTable.setModel(tableModel);
-        dataJTable.getColumnModel().getColumn(0).setCellRenderer(cellRenderer);
 
         dbConnector.close();
     }
@@ -126,7 +131,8 @@ public class MainView {
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
             Color c = Color.WHITE;
-            if (value.toString().equals(""))
+            String databaseCellValue = dataInDatabase.get(row).get(column);
+            if (!value.toString().equals(databaseCellValue))
                 c = Color.RED;
             label.setBackground(c);
             return label;
