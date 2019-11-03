@@ -1,11 +1,14 @@
 package com.company;
 
 
+import org.sqlite.core.DB;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.io.*;
+import java.sql.SQLException;
 import java.util.*;
 
 public class MainView {
@@ -22,7 +25,7 @@ public class MainView {
     private Vector<Vector<String>> dataInDatabase;
 
 
-    private  void initDatabaseData() {
+    private void initDatabaseData() {
         dataJTable.setDefaultRenderer(Object.class, new CustomCellRenderer());
         DBConnector dbConnector = new DBConnector();
         dataInDatabase = dbConnector.getData();
@@ -105,16 +108,27 @@ public class MainView {
             }
             records.add(record);
         }
-        dbConnector.setDataRow(records);
+        if (dataInDatabase.size() == 0) {
+            dbConnector.insertData(records);
+        } else {
+            dbConnector.updateData(records);
+        }
         dbConnector.close();
         dataInDatabase = records;
+        tableModel.fireTableDataChanged();
     }
 
     private void readFromDatabase() {
         DefaultTableModel tableModel = new DefaultTableModel(LABELS, 0);
+        Vector<Vector<String>> records = new Vector<>();
 
         DBConnector dbConnector = new DBConnector();
-        Vector<Vector<String>> records = dbConnector.getData();
+        try {
+            if (dbConnector.checkExisting())
+                records = dbConnector.getData();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
         for (Vector<String> record : records) {
             tableModel.addRow(record);
@@ -131,12 +145,17 @@ public class MainView {
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
             Color c = Color.WHITE;
-            String databaseCellValue = dataInDatabase.get(row).get(column);
-            if (!value.toString().equals(databaseCellValue))
+            if (dataInDatabase.size() != 0) {
+                String databaseCellValue = dataInDatabase.get(row).get(column);
+                if (!value.toString().equals(databaseCellValue))
+                    c = Color.RED;
+            } else {
                 c = Color.RED;
+            }
             label.setBackground(c);
             return label;
         }
+
     }
 
 
