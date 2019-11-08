@@ -6,6 +6,7 @@ import org.sqlite.core.DB;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -147,7 +148,12 @@ public class MainView {
 
     private void saveToXML() {
         DefaultTableModel tableModel = (DefaultTableModel) dataJTable.getModel();
-        XMLHelper xmlHelper = new XMLHelper();
+        XMLHelper xmlHelper = null;
+        try {
+            xmlHelper = new XMLHelper();
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        }
 
         int rowsNumber = tableModel.getRowCount();
         int columnsNumber = tableModel.getColumnCount();
