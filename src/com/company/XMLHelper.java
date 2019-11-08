@@ -11,7 +11,6 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -20,7 +19,7 @@ import java.util.Vector;
 
 public class XMLHelper {
     private static final String XML_PATH = "src/katalog.xml";
-    private static final String[] LABELS = {"manufacturer", "size", "resolution","type", "touchscreen", "name",
+    private static final String[] LABELS = {"manufacturer", "size", "resolution", "type", "touchscreen", "name",
             "physical_cores", "clock_speed", "ram", "storage", "type", "name", "memory", "os", "disc_reader"};
     private DocumentBuilderFactory documentFactory;
     private DocumentBuilder documentBuilder;
@@ -46,15 +45,12 @@ public class XMLHelper {
             document = documentBuilder.parse(file);
             document.getDocumentElement().normalize();
 
-            NodeList nodes = document.getElementsByTagName("laptop");
-            for (int i = 0; i < nodes.getLength(); i++) {
+            NodeList laptops = document.getElementsByTagName("laptop");
+            for (int i = 0; i < laptops.getLength(); i++) {
                 Vector<String> record = new Vector<>();
-                Node node = nodes.item(i);
-                if (node.getNodeType() == Node.ELEMENT_NODE) {
-                    Element element = (Element) node;
-                    for (int j = 0; j < LABELS.length; j++) {
-                        record.add(element.getElementsByTagName(LABELS[j]).item(0).getTextContent());
-                    }
+                Node laptop = laptops.item(i);
+                if (laptop.getNodeType() == Node.ELEMENT_NODE) {
+                    record=getNodeValues(laptop.getChildNodes());
                 }
                 records.add(record);
             }
@@ -65,10 +61,27 @@ public class XMLHelper {
         return records;
     }
 
+
+    private Vector<String> getNodeValues(NodeList nodeList) {
+        Vector<String> values = new Vector<>();
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            Node node = nodeList.item(i);
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                int nodeChildsNumber = node.getChildNodes().getLength();
+                if(nodeChildsNumber < 2 ){
+                    values.add(node.getTextContent());
+                }
+                else {
+                    values.addAll(getNodeValues(node.getChildNodes()));
+                }
+            }
+        }
+        return values;
+    }
+
     public void createXML(Vector<Vector<String>> records) {
         document = documentBuilder.newDocument();
         try {
-            //laptops
             Element laptops = document.createElement("laptops");
             Attr moddate = document.createAttribute("moddate");
             moddate.setValue(getCurrentTimestamp());
