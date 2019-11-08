@@ -1,21 +1,18 @@
 package com.company;
 
 
-import org.sqlite.core.DB;
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+
 import java.io.*;
 import java.sql.SQLException;
 import java.util.*;
 
 public class MainView {
-    private static final String[] LABELS = {"Producent", "Przekątna", "Rozdzielczość", "Matryca", "Używany", "Procesor",
+    private static final String[] LABELS = {"Producent", "Przekątna", "Rozdzielczość", "Matryca", "Dotykowy", "Procesor",
             "L. rdzeni", "Taktowanie", "RAM", "Pojemność", "Dysk", "Karta graficzna", "VRAM", "System", "Napęd"};
     private static final String FILE_PATH = "src/katalog.txt";
 
@@ -26,6 +23,7 @@ public class MainView {
     private JPanel mainJPanel;
     private JButton databaseExportButton;
     private JButton xmlExportButton;
+    private JButton xmlImportButton;
     private Vector<Vector<String>> dataInDatabase;
 
 
@@ -62,6 +60,9 @@ public class MainView {
         });
         xmlExportButton.addActionListener(e -> {
             saveToXML();
+        });
+        xmlImportButton.addActionListener(e -> {
+            readFromXML();
         });
     }
 
@@ -141,6 +142,24 @@ public class MainView {
             Vector<Vector<String>> records = getRecords();
 
             xmlHelper.createXML(records);
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void readFromXML() {
+        try {
+            DefaultTableModel tableModel = new DefaultTableModel(LABELS, 0);
+            XMLHelper xmlHelper = new XMLHelper();
+
+            Vector<Vector<String>> records = new Vector<>();
+            records = xmlHelper.readXML();
+
+            for (Vector<String> record : records) {
+                tableModel.addRow(record);
+            }
+
+            dataJTable.setModel(tableModel);
         } catch (ParserConfigurationException e) {
             e.printStackTrace();
         }

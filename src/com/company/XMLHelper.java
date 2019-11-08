@@ -1,8 +1,7 @@
 package com.company;
 
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+import org.w3c.dom.*;
+import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -12,14 +11,17 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import java.awt.*;
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Vector;
 
 public class XMLHelper {
     private static final String XML_PATH = "src/katalog.xml";
-    //    private static final String[] LABELS = {"manufacturer","screen",};
+    private static final String[] LABELS = {"manufacturer", "size", "resolution","type", "touchscreen", "name",
+            "physical_cores", "clock_speed", "ram", "storage", "type", "name", "memory", "os", "disc_reader"};
     private DocumentBuilderFactory documentFactory;
     private DocumentBuilder documentBuilder;
     private Document document;
@@ -27,7 +29,6 @@ public class XMLHelper {
     public XMLHelper() throws ParserConfigurationException {
         documentFactory = DocumentBuilderFactory.newInstance();
         documentBuilder = documentFactory.newDocumentBuilder();
-        document = documentBuilder.newDocument();
     }
 
     private String getCurrentTimestamp() {
@@ -37,9 +38,35 @@ public class XMLHelper {
     }
 
 
+    public Vector<Vector<String>> readXML() {
+        Vector<Vector<String>> records = new Vector<>();
+        try {
+            File file = new File(XML_PATH);
+            file.createNewFile();
+            document = documentBuilder.parse(file);
+            document.getDocumentElement().normalize();
+
+            NodeList nodes = document.getElementsByTagName("laptop");
+            for (int i = 0; i < nodes.getLength(); i++) {
+                Vector<String> record = new Vector<>();
+                Node node = nodes.item(i);
+                if (node.getNodeType() == Node.ELEMENT_NODE) {
+                    Element element = (Element) node;
+                    for (int j = 0; j < LABELS.length; j++) {
+                        record.add(element.getElementsByTagName(LABELS[j]).item(0).getTextContent());
+                    }
+                }
+                records.add(record);
+            }
+
+        } catch (IOException | SAXException e) {
+            e.printStackTrace();
+        }
+        return records;
+    }
 
     public void createXML(Vector<Vector<String>> records) {
-
+        document = documentBuilder.newDocument();
         try {
             //laptops
             Element laptops = document.createElement("laptops");
@@ -50,7 +77,7 @@ public class XMLHelper {
 
             int i = 1;
             for (Vector<String> record : records) {
-                createLaptopElement(laptops,record,i);
+                createLaptopElement(laptops, record, i);
                 i++;
             }
 
@@ -62,12 +89,12 @@ public class XMLHelper {
             transformer.transform(domSource, streamResult);
 
             System.out.println("Done creating XML File");
-        } catch (  TransformerException pce) {
+        } catch (TransformerException pce) {
             pce.printStackTrace();
         }
     }
 
-    private void createLaptopElement(Element parent,Vector<String> record, int id) {
+    private void createLaptopElement(Element parent, Vector<String> record, int id) {
         //laptop
         Element laptop = document.createElement("laptop");
         parent.appendChild(laptop);
