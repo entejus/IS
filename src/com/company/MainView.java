@@ -33,6 +33,8 @@ public class MainView {
     }
 
     private MainView() {
+        XMLHelper xml = new XMLHelper();
+        xml.createXML();
         initDatabaseData();
         fileImportButton.addActionListener(e -> {
             try {
