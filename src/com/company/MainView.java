@@ -99,22 +99,10 @@ public class MainView {
     }
 
     private void saveToDatabase() {
-        DefaultTableModel tableModel = (DefaultTableModel) dataJTable.getModel();
-
         DBConnector dbConnector = new DBConnector();
 
-        int rowsNumber = tableModel.getRowCount();
-        int columnsNumber = tableModel.getColumnCount();
-        Vector<Vector<String>> records = new Vector<>();
+        Vector<Vector<String>> records = getRecords();
 
-        for (int row = 0; row < rowsNumber; row++) {
-            Vector<String> record = new Vector<>();
-            for (int column = 0; column < columnsNumber; column++) {
-                String cell = tableModel.getValueAt(row, column).toString();
-                record.add(Objects.requireNonNullElse(cell, ""));
-            }
-            records.add(record);
-        }
         if (dataInDatabase.size() == 0) {
             dbConnector.insertData(records);
         } else {
@@ -122,7 +110,7 @@ public class MainView {
         }
         dbConnector.close();
         dataInDatabase = records;
-        tableModel.fireTableDataChanged();
+        refreshTable();
     }
 
     private void readFromDatabase() {
@@ -147,14 +135,19 @@ public class MainView {
     }
 
     private void saveToXML() {
-        DefaultTableModel tableModel = (DefaultTableModel) dataJTable.getModel();
-        XMLHelper xmlHelper = null;
         try {
-            xmlHelper = new XMLHelper();
+            XMLHelper xmlHelper = new XMLHelper();
+
+            Vector<Vector<String>> records = getRecords();
+
+            xmlHelper.createXML(records);
         } catch (ParserConfigurationException e) {
             e.printStackTrace();
         }
+    }
 
+    private Vector<Vector<String>> getRecords() {
+        DefaultTableModel tableModel = (DefaultTableModel) dataJTable.getModel();
         int rowsNumber = tableModel.getRowCount();
         int columnsNumber = tableModel.getColumnCount();
         Vector<Vector<String>> records = new Vector<>();
@@ -167,7 +160,12 @@ public class MainView {
             }
             records.add(record);
         }
-        xmlHelper.createXML(records);
+        return records;
+    }
+
+    private void refreshTable() {
+        DefaultTableModel tableModel = (DefaultTableModel) dataJTable.getModel();
+        tableModel.fireTableDataChanged();
     }
 
     public class CustomCellRenderer extends DefaultTableCellRenderer {
@@ -188,7 +186,6 @@ public class MainView {
         }
 
     }
-
 
     private Vector<String> splitToCells(String line) {
         Vector<String> cells = new Vector<>();
