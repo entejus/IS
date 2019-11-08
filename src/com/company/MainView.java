@@ -7,6 +7,8 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.*;
 import java.sql.SQLException;
 import java.util.*;
@@ -22,6 +24,7 @@ public class MainView {
     private JTable dataJTable;
     private JPanel mainJPanel;
     private JButton databaseExportButton;
+    private JButton xmlExportButton;
     private Vector<Vector<String>> dataInDatabase;
 
 
@@ -33,8 +36,6 @@ public class MainView {
     }
 
     private MainView() {
-        XMLHelper xml = new XMLHelper();
-        xml.createXML();
         initDatabaseData();
         fileImportButton.addActionListener(e -> {
             try {
@@ -57,6 +58,9 @@ public class MainView {
         });
         databaseExportButton.addActionListener(e -> {
             saveToDatabase();
+        });
+        xmlExportButton.addActionListener(e -> {
+            saveToXML();
         });
     }
 
@@ -139,6 +143,25 @@ public class MainView {
         dataJTable.setModel(tableModel);
 
         dbConnector.close();
+    }
+
+    private void saveToXML() {
+        DefaultTableModel tableModel = (DefaultTableModel) dataJTable.getModel();
+        XMLHelper xmlHelper = new XMLHelper();
+
+        int rowsNumber = tableModel.getRowCount();
+        int columnsNumber = tableModel.getColumnCount();
+        Vector<Vector<String>> records = new Vector<>();
+
+        for (int row = 0; row < rowsNumber; row++) {
+            Vector<String> record = new Vector<>();
+            for (int column = 0; column < columnsNumber; column++) {
+                String cell = tableModel.getValueAt(row, column).toString();
+                record.add(Objects.requireNonNullElse(cell, ""));
+            }
+            records.add(record);
+        }
+        xmlHelper.createXML(records);
     }
 
     public class CustomCellRenderer extends DefaultTableCellRenderer {
