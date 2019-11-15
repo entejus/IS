@@ -1,18 +1,18 @@
 package com.company;
 
 
-import org.sqlite.core.DB;
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
+
 import java.io.*;
 import java.sql.SQLException;
 import java.util.*;
 
 public class MainView {
-    private static final String[] LABELS = {"Producent", "Przekątna", "Rozdzielczość", "Matryca", "Używany", "Procesor",
+    private static final String[] LABELS = {"Producent", "Przekątna", "Rozdzielczość", "Matryca", "Dotykowy", "Procesor",
             "L. rdzeni", "Taktowanie", "RAM", "Pojemność", "Dysk", "Karta graficzna", "VRAM", "System", "Napęd"};
     private static final String FILE_PATH = "src/katalog.txt";
 
@@ -22,6 +22,8 @@ public class MainView {
     private JTable dataJTable;
     private JPanel mainJPanel;
     private JButton databaseExportButton;
+    private JButton xmlExportButton;
+    private JButton xmlImportButton;
     private Vector<Vector<String>> dataInDatabase;
 
 
@@ -55,6 +57,12 @@ public class MainView {
         });
         databaseExportButton.addActionListener(e -> {
             saveToDatabase();
+        });
+        xmlExportButton.addActionListener(e -> {
+            saveToXML();
+        });
+        xmlImportButton.addActionListener(e -> {
+            readFromXML();
         });
     }
 
@@ -92,22 +100,10 @@ public class MainView {
     }
 
     private void saveToDatabase() {
-        DefaultTableModel tableModel = (DefaultTableModel) dataJTable.getModel();
-
         DBConnector dbConnector = new DBConnector();
 
-        int rowsNumber = tableModel.getRowCount();
-        int columnsNumber = tableModel.getColumnCount();
-        Vector<Vector<String>> records = new Vector<>();
+        Vector<Vector<String>> records = getRecords();
 
-        for (int row = 0; row < rowsNumber; row++) {
-            Vector<String> record = new Vector<>();
-            for (int column = 0; column < columnsNumber; column++) {
-                String cell = tableModel.getValueAt(row, column).toString();
-                record.add(Objects.requireNonNullElse(cell, ""));
-            }
-            records.add(record);
-        }
         if (dataInDatabase.size() == 0) {
             dbConnector.insertData(records);
         } else {
@@ -115,7 +111,7 @@ public class MainView {
         }
         dbConnector.close();
         dataInDatabase = records;
-        tableModel.fireTableDataChanged();
+        refreshTable();
     }
 
     private void readFromDatabase() {
@@ -139,6 +135,58 @@ public class MainView {
         dbConnector.close();
     }
 
+    private void saveToXML() {
+        try {
+            XMLHelper xmlHelper = new XMLHelper();
+
+            Vector<Vector<String>> records = getRecords();
+
+            xmlHelper.createXML(records);
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void readFromXML() {
+        try {
+            DefaultTableModel tableModel = new DefaultTableModel(LABELS, 0);
+            XMLHelper xmlHelper = new XMLHelper();
+
+            Vector<Vector<String>> records = new Vector<>();
+            records = xmlHelper.readXML();
+
+            for (Vector<String> record : records) {
+                tableModel.addRow(record);
+            }
+
+            dataJTable.setModel(tableModel);
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Vector<Vector<String>> getRecords() {
+        DefaultTableModel tableModel = (DefaultTableModel) dataJTable.getModel();
+        int rowsNumber = tableModel.getRowCount();
+        int columnsNumber = tableModel.getColumnCount();
+        Vector<Vector<String>> records = new Vector<>();
+
+        for (int row = 0; row < rowsNumber; row++) {
+            Vector<String> record = new Vector<>();
+            for (int column = 0; column < columnsNumber; column++) {
+                String cell = tableModel.getValueAt(row, column).toString();
+                record.add(Objects.requireNonNullElse(cell, ""));
+            }
+            records.add(record);
+        }
+        return records;
+    }
+
+    private void refreshTable() {
+        DefaultTableModel tableModel = (DefaultTableModel) dataJTable.getModel();
+        tableModel.fireTableDataChanged();
+    }
+
     public class CustomCellRenderer extends DefaultTableCellRenderer {
 
         @Override
@@ -157,7 +205,6 @@ public class MainView {
         }
 
     }
-
 
     private Vector<String> splitToCells(String line) {
         Vector<String> cells = new Vector<>();
